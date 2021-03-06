@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:market/pages/register_page.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:market/pages/product/products_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   static const String ROUTE = "/login";
@@ -10,8 +16,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _obscurePassword = true;
+
+  bool isSubmitted = false;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -19,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Login"),
       ),
@@ -47,11 +57,11 @@ class _LoginPageState extends State<LoginPage> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: TextFormField(
         controller: _emailController,
-        validator: (val) => !val.contains('@') ? 'Email inválida' : null,
+        validator: (val) => val.length < 3 ? 'Cuenta inválida' : null,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: 'Email',
-            hintText: 'Coloque un email',
+            labelText: 'Email o usuario',
+            hintText: 'Coloque un email o usuario',
             icon: Icon(
               Icons.email,
               color: Theme.of(context).accentColor,
@@ -87,21 +97,25 @@ class _LoginPageState extends State<LoginPage> {
   Widget _actions() {
     return Column(
       children: [
-        RaisedButton(
-            splashColor: Theme.of(context).primaryColorDark,
-            color: Theme.of(context).primaryColor,
-            child: Text("Enviar",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1
-                    .copyWith(color: Colors.white)),
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                print("Formulario válido!");
-              } else {
-                print("errores en el form");
-              }
-            }),
+        isSubmitted
+            ? CircularProgressIndicator()
+            : RaisedButton(
+                splashColor: Theme.of(context).primaryColorDark,
+                color: Theme.of(context).primaryColor,
+                child: Text("Enviar",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(color: Colors.white)),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    print("Formulario válido!");
+
+                    _loginUser();
+                  } else {
+                    print("errores en el form");
+                  }
+                }),
         FlatButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, RegisterPage.ROUTE);
@@ -116,5 +130,67 @@ class _LoginPageState extends State<LoginPage> {
       'Login',
       style: Theme.of(context).textTheme.headline1,
     );
+  }
+
+  void _loginUser() async {
+    setState(() => isSubmitted = true);
+
+    final res = await http.post('http://10.0.2.2:1337/auth/local', body: {
+      "identifier": _emailController.text,
+      "password": _passwordController.text,
+    });
+
+    setState(() => isSubmitted = false);
+
+    final responseData = json.decode(res.body);
+    if (res.statusCode == 200) {
+      print("Respuesta correcta");
+      _successResponse();
+      _storeUserData(responseData);
+      _redirectUser();
+    } else {
+      _errorResponse(responseData['message'][0]['messages'][0]['message']);
+    }
+  }
+
+  void _successResponse() {
+    final _snackBar = SnackBar(
+        content: Text(
+      'Login correcto para ${_emailController.text}',
+      style: TextStyle(color: Theme.of(context).accentColor),
+    ));
+    // Scaffold.of(context).showSnackBar(_snackBar);
+    _scaffoldKey.currentState.showSnackBar(_snackBar);
+  }
+
+  void _errorResponse(String msj) {
+    final _snackBar = SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          msj,
+          style: TextStyle(color: Colors.white),
+        ));
+    // Scaffold.of(context).showSnackBar(_snackBar);
+    _scaffoldKey.currentState.showSnackBar(_snackBar);
+  }
+
+  void _storeUserData(Map<String, dynamic> responseData) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('jwt', responseData['jwt']);
+    prefs.setString('email', responseData['user']['email']);
+    prefs.setString('username', responseData['user']['username']);
+    prefs.setString('id', responseData['user']['_id']);
+
+    print(prefs.getString('jwt'));
+    print(prefs.getString('email'));
+    print(prefs.getString('username'));
+    print(prefs.getString('id'));
+  }
+
+  void _redirectUser() {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, ProductsPage.ROUTE);
+    });
   }
 }
