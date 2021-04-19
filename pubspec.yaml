@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   http: 
   shared_preferences:
+  flutter_redux: ^0.8.2 #https://pub.dev/packages/flutter_redux
+  redux_thunk: ^0.4.0 #https://pub.dev/packages/redux_thunk 
 
 
   # The following adds the Cupertino Icons font to your application.

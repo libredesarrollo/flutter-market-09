@@ -135,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     print("errores en el form");
                   }
                 }),
-        FlatButton(
+        TextButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, LoginPage.ROUTE);
             },
@@ -154,11 +154,22 @@ class _RegisterPageState extends State<RegisterPage> {
   void _registerUser() async {
     setState(() => isSubmitted = true);
 
+    final resCart = await http.post('http://10.0.2.2:1337/carts', body: {'products': '[]'});
+
+    final responseDataCart = json.decode(resCart.body);
+
+    final resFavorite = await http
+        .post('http://10.0.2.2:1337/favorites', body: {'products': '[]'});
+
+    final responseDataFavorite = json.decode(resFavorite.body);
+
     final res =
         await http.post('http://10.0.2.2:1337/auth/local/register', body: {
       "username": _usernameController.text,
       "email": _emailController.text,
       "password": _passwordController.text,
+      "cart_id": responseDataCart['id'],
+      "favorite_id": responseDataFavorite['id'],
     });
 
     setState(() => isSubmitted = false);
