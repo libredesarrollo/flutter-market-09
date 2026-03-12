@@ -1,21 +1,19 @@
-import 'package:meta/meta.dart';
-
 class User {
-  String id;
-  String username;
-  String email;
-  String jwt;
-  String cartId;
-  String favoriteId;
+  final String id;
+  final String username;
+  final String email;
+  final String jwt;
+  final String cartId;
+  final String favoriteId;
 
-  User(
-      {@required this.id,
-      @required this.username,
-      @required this.email,
-      @required this.jwt,
-      @required this.cartId,
-      @required this.favoriteId
-      });
+  const User({
+    required this.id,
+    required this.username,
+    required this.email,
+    required this.jwt,
+    required this.cartId,
+    required this.favoriteId,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
       id: json['id'],

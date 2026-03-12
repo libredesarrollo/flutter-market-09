@@ -1,13 +1,13 @@
-import 'package:market/models/product.dart';
-import 'package:meta/meta.dart';
+import 'package:tienda_app/models/product.dart';
+import 'package:tienda_app/models/user.dart';
 
-@immutable
 class AppState {
-  final dynamic user;
+  final User? user;
   final List<Product> products;
   final List<Product> productsCart;
 
-  AppState({@required this.user, @required this.products, @required this.productsCart});
+  const AppState(
+      {required this.user, required this.products, required this.productsCart});
 
   factory AppState.initial() {
     return AppState(user: null, products: [], productsCart: []);

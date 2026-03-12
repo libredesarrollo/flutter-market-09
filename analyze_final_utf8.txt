@@ -1,0 +1,15 @@
+﻿Analyzing redux...                                              
+
+   info - The prefix 'cartPage' isn't a lower_case_with_underscores identifier - lib\main.dart:16:59 - library_prefixes
+   info - Use interpolation to compose strings and values - lib\models\product.dart:33:16 - prefer_interpolation_to_compose_strings
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\cart\index_page.dart:10:23 - constant_identifier_names
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\login_page.dart:13:23 - constant_identifier_names
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\product\detail_page.dart:11:23 - constant_identifier_names
+warning - Unused import: 'package:tienda_app/models/product.dart' - lib\pages\product\products_page.dart:5:8 - unused_import
+   info - The prefix 'cartPage' isn't a lower_case_with_underscores identifier - lib\pages\product\products_page.dart:10:59 - library_prefixes
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\product\products_page.dart:17:23 - constant_identifier_names
+   info - Unnecessary use of multiple underscores - lib\pages\product\products_page.dart:148:43 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\pages\product\products_page.dart:148:47 - unnecessary_underscores
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\register_page.dart:13:23 - constant_identifier_names
+   info - Statements in an if should be enclosed in a block - lib\redux\reducers.dart:22:5 - curly_braces_in_flow_control_structures
+

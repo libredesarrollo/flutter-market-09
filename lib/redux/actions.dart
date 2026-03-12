@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:market/models/product.dart';
+import 'package:tienda_app/models/product.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -8,29 +8,36 @@ import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:market/models/app_state.dart';
-import 'package:market/models/user.dart';
+import 'package:tienda_app/models/app_state.dart';
+import 'package:tienda_app/models/user.dart';
+import 'package:flutter/foundation.dart';
 
 //*** Middleware
+
+/// ThunkAction to fetch user from SharedPreferences
 ThunkAction<AppState> getUserAction = (Store<AppState> store) async {
   final prefs = await SharedPreferences.getInstance();
 
-  final Map<String, dynamic> userMap = prefs.getString('email') == null
-      ? null
-      : ({
-          'email': prefs.getString('email'),
-          'jwt': prefs.getString('jwt'),
-          'username': prefs.getString('username'),
-          'id': prefs.getString('id'),
-          'cart_id': prefs.getString('cart_id'),
-          'favorite_id': prefs.getString('favorite_id'),
-        });
+  final email = prefs.getString('email');
+  if (email == null) {
+    store.dispatch(GetUserAction(null));
+    return;
+  }
 
-  final user = userMap == null ? null : User.fromJson(userMap);
+  final userMap = {
+    'email': email,
+    'jwt': prefs.getString('jwt'),
+    'username': prefs.getString('username'),
+    'id': prefs.getString('id'),
+    'cart_id': prefs.getString('cart_id'),
+    'favorite_id': prefs.getString('favorite_id'),
+  };
 
+  final user = User.fromJson(userMap);
   store.dispatch(GetUserAction(user));
 };
 
+/// ThunkAction to logout user and clear SharedPreferences
 ThunkAction<AppState> logoutUserAction = (Store<AppState> store) async {
   final prefs = await SharedPreferences.getInstance();
 
@@ -44,274 +51,247 @@ ThunkAction<AppState> logoutUserAction = (Store<AppState> store) async {
   store.dispatch(LogoutUserAction(null));
 };
 
+/// ThunkAction to fetch products from API
 ThunkAction<AppState> getProductsAction = (Store<AppState> store) async {
-  final res = await http.get("http://10.0.2.2:1337/products");
-  final List<dynamic> resData = json.decode(res.body);
-
-  final List<Product> products = [];
-  resData.forEach((pm) {
-    final Product p = Product.fromJson(pm);
-    products.add(p);
-  });
-
-  store.dispatch(GetProductsAction(products));
+  try {
+    final res = await http.get(Uri.parse("http://10.0.2.2:1337/products"));
+    if (res.statusCode == 200) {
+      final List<dynamic> resData = json.decode(res.body);
+      final products = resData.map((pm) => Product.fromJson(pm)).toList();
+      store.dispatch(GetProductsAction(products));
+    }
+  } catch (e) {
+    debugPrint("Error fetching products: $e");
+  }
 };
 
+/// ThunkAction to update a product
 ThunkAction<AppState> updateProductAction(Product product) {
   return (Store<AppState> store) async {
-    //final List<Product> products = store.state.products;
-
-    //final int index = products.indexWhere((p) => p.id == product.id);
-    //products[index] = product;
-
-    // final res = await http.get("http://10.0.2.2:1337/products");
-    // final List<dynamic> resData = json.decode(res.body);
-
     store.dispatch(UpdateProductAction(product));
   };
 }
 
+/// ThunkAction to toggle a product in the cart
 ThunkAction<AppState> toggleCartProductAction(Product cartProduct, int count) {
   return (Store<AppState> store) async {
-    final List<Product> cartProducts = store.state.productsCart;
-    final User user = store.state.user;
+    final List<Product> cartProducts = List.from(store.state.productsCart);
+    final User? user = store.state.user;
+
+    if (user == null) return;
 
     final int index = cartProducts.indexWhere((p) => cartProduct.id == p.id);
 
     if (index > -1) {
-      cartProduct.cartCount = 0;
       cartProducts.removeAt(index);
     } else {
-      cartProduct.cartCount = count;
-      cartProducts.add(cartProduct);
+      cartProducts.add(cartProduct.copyWith(cartCount: count));
     }
 
-    final List<Map> cartProductsIds = cartProducts
+    final List<Map<String, dynamic>> cartProductsIds = cartProducts
         .map((p) => {'product_id': p.id, 'count': p.cartCount})
         .toList();
 
-    print(cartProductsIds);
-
-    final res =
-        await http.put("http://10.0.2.2:1337/carts/${user.cartId}", body: {
-      "products": json.encode(cartProductsIds),
-    }, headers: {
-      "Authorization": "Bearer ${user.jwt}"
-    });
-
-    print(res.statusCode);
-
-    store.dispatch(TogleCartProductAction(cartProducts));
+    try {
+      final res = await http.put(
+        Uri.parse("http://10.0.2.2:1337/carts/${user.cartId}"),
+        body: {"products": json.encode(cartProductsIds)},
+        headers: {"Authorization": "Bearer ${user.jwt}"},
+      );
+      debugPrint("Toggle Cart Status: ${res.statusCode}");
+      store.dispatch(ToggleCartProductAction(cartProducts));
+    } catch (e) {
+      debugPrint("Error toggling cart: $e");
+    }
   };
 }
 
+/// ThunkAction to toggle a favorite product
 ThunkAction<AppState> toggleFavoriteAction(Product productFavorite) {
   return (Store<AppState> store) async {
-    final List<Product> products = store.state.products;
-    final User user = store.state.user;
+    final List<Product> products = List.from(store.state.products);
+    final User? user = store.state.user;
+    if (user == null) return;
 
     final int index = products.indexWhere((p) => productFavorite.id == p.id);
 
     if (index > -1) {
-      products[index].favorite = !products[index].favorite;
+      var p = products[index];
+      products[index] = p.copyWith(favorite: !p.favorite);
     }
 
     final List<Product> productsFavorite =
         products.where((p) => p.favorite).toList();
 
-    final List<Map> productsFavoriteId =
+    final List<Map<String, dynamic>> productsFavoriteId =
         productsFavorite.map((p) => {'product_id': p.id}).toList();
 
-    print(productsFavoriteId);
-
-    final res = await http
-        .put("http://10.0.2.2:1337/favorites/${user.favoriteId}", body: {
-      "products": json.encode(productsFavoriteId),
-    }, headers: {
-      "Authorization": "Bearer ${user.jwt}"
-    });
-
-    print(res.statusCode);
-
-    store.dispatch(ToggleFavoriteAction(products));
+    try {
+      final res = await http.put(
+        Uri.parse("http://10.0.2.2:1337/favorites/${user.favoriteId}"),
+        body: {"products": json.encode(productsFavoriteId)},
+        headers: {"Authorization": "Bearer ${user.jwt}"},
+      );
+      debugPrint("Toggle Favorite Status: ${res.statusCode}");
+      store.dispatch(ToggleFavoriteAction(products));
+    } catch (e) {
+      debugPrint("Error toggling favorite: $e");
+    }
   };
 }
 
+/// ThunkAction to change quantity of a product in the cart
 ThunkAction<AppState> changeCartProductAction(Product cartProduct, int count) {
   return (Store<AppState> store) async {
-    final List<Product> cartProducts = store.state.productsCart;
-    final User user = store.state.user;
+    final List<Product> cartProducts = List.from(store.state.productsCart);
+    final User? user = store.state.user;
+    if (user == null) return;
 
     final int index = cartProducts.indexWhere((p) => cartProduct.id == p.id);
 
     if (index > -1) {
-      cartProducts[index].cartCount = count;
+      cartProducts[index] = cartProducts[index].copyWith(cartCount: count);
     }
 
-    final List<Map> cartProductsIds = cartProducts
+    final List<Map<String, dynamic>> cartProductsIds = cartProducts
         .map((p) => {'product_id': p.id, 'count': p.cartCount})
         .toList();
 
-    print(cartProductsIds);
-
-    final res =
-        await http.put("http://10.0.2.2:1337/carts/${user.cartId}", body: {
-      "products": json.encode(cartProductsIds),
-    }, headers: {
-      "Authorization": "Bearer ${user.jwt}"
-    });
-
-    print(res.statusCode);
-
-    store.dispatch(ChangeCartProductAction(cartProducts));
+    try {
+      final res = await http.put(
+        Uri.parse("http://10.0.2.2:1337/carts/${user.cartId}"),
+        body: {"products": json.encode(cartProductsIds)},
+        headers: {"Authorization": "Bearer ${user.jwt}"},
+      );
+      debugPrint("Change Cart Status: ${res.statusCode}");
+      store.dispatch(ChangeCartProductAction(cartProducts));
+    } catch (e) {
+      debugPrint("Error changing cart quantity: $e");
+    }
   };
 }
 
-ThunkAction<AppState> getProductsFavoriteAction =
-    (Store<AppState> store) async {
-  final User user = store.state.user;
+/// ThunkAction to fetch favorite products
+ThunkAction<AppState> getProductsFavoriteAction = (Store<AppState> store) async {
+  final User? user = store.state.user;
+  if (user == null) return;
 
-  final res = await http.get(
-      "http://10.0.2.2:1337/favorites/${user.favoriteId}",
-      headers: {"Authorization": "Bearer ${user.jwt}"});
+  try {
+    final res = await http.get(
+        Uri.parse("http://10.0.2.2:1337/favorites/${user.favoriteId}"),
+        headers: {"Authorization": "Bearer ${user.jwt}"});
 
-  print(res.statusCode);
-
-  if (res.statusCode == 200) {
-    final resData = json.decode(res.body);
-
-    final resDataProducts = json.decode(resData['products']);
-
-    return store.dispatch(GetProductsFavoriteAction(
-        _setProductsIdToProductsFavorite(store, resDataProducts)));
+    if (res.statusCode == 200) {
+      final resData = json.decode(res.body);
+      final resDataProducts = json.decode(resData['products']);
+      store.dispatch(GetProductsFavoriteAction(
+          _setProductsIdToProductsFavorite(store, resDataProducts)));
+    } else {
+      store.dispatch(GetProductsFavoriteAction([]));
+    }
+  } catch (e) {
+    debugPrint("Error fetching favorites: $e");
+    store.dispatch(GetProductsFavoriteAction([]));
   }
-  store.dispatch(GetProductsFavoriteAction([]));
 };
 
 List<Product> _setProductsIdToProductsFavorite(
     Store<AppState> store, List<dynamic> productsString) {
-  List<Product> products = store.state.products;
+  List<Product> products = List.from(store.state.products);
 
-  productsString.forEach((pString) {
-    final index =
-        store.state.products.indexWhere((p) => p.id == pString['product_id']);
-
+  for (var pString in productsString) {
+    final index = products.indexWhere((p) => p.id == pString['product_id']);
     if (index > -1) {
-      store.state.products[index].favorite = true;
+      products[index] = products[index].copyWith(favorite: true);
     }
-  });
+  }
 
   return products;
 }
 
+/// ThunkAction to fetch cart products
 ThunkAction<AppState> getProductsCartAction = (Store<AppState> store) async {
-  final User user = store.state.user;
+  final User? user = store.state.user;
+  if (user == null) return;
 
-  final res = await http.get("http://10.0.2.2:1337/carts/${user.cartId}",
-      headers: {"Authorization": "Bearer ${user.jwt}"});
+  try {
+    final res = await http.get(Uri.parse("http://10.0.2.2:1337/carts/${user.cartId}"),
+        headers: {"Authorization": "Bearer ${user.jwt}"});
 
-  if (res.statusCode == 200) {
-    final resData = json.decode(res.body);
-
-    try {
+    if (res.statusCode == 200) {
+      final resData = json.decode(res.body);
       final resDataProducts = json.decode(resData['products']);
-
-      return store.dispatch(GetProductsCartAction(
+      store.dispatch(GetProductsCartAction(
           _setProductsIdToProducts(store, resDataProducts)));
-    } catch (e) {
-      
+    } else {
+      store.dispatch(GetProductsCartAction([]));
     }
+  } catch (e) {
+    debugPrint("Error fetching cart: $e");
+    store.dispatch(GetProductsCartAction([]));
   }
-  store.dispatch(GetProductsCartAction([]));
 };
 
 List<Product> _setProductsIdToProducts(
     Store<AppState> store, List<dynamic> productsString) {
   List<Product> productsCart = [];
+  List<Product> allProducts = store.state.products;
 
-  productsString.forEach((pString) {
-    final index =
-        store.state.products.indexWhere((p) => p.id == pString['product_id']);
-
+  for (var pString in productsString) {
+    final index = allProducts.indexWhere((p) => p.id == pString['product_id']);
     if (index > -1) {
-      store.state.products[index].cartCount = pString['count'];
-      productsCart.add(store.state.products[index]);
+      productsCart.add(allProducts[index].copyWith(cartCount: pString['count']));
     }
-  });
+  }
 
   return productsCart;
 }
 
-// *** acciones
+// *** Acciones
 
 class ToggleFavoriteAction {
-  final List<Product> _products;
-
-  ToggleFavoriteAction(this._products);
-
-  dynamic get products => this._products;
+  final List<Product> products;
+  ToggleFavoriteAction(this.products);
 }
 
 class GetProductsCartAction {
-  final List<Product> _productsCart;
-
-  GetProductsCartAction(this._productsCart);
-
-  dynamic get productsCart => this._productsCart;
+  final List<Product> productsCart;
+  GetProductsCartAction(this.productsCart);
 }
 
 class GetProductsFavoriteAction {
-  final List<Product> _products;
-
-  GetProductsFavoriteAction(this._products);
-
-  dynamic get products => this._products;
+  final List<Product> products;
+  GetProductsFavoriteAction(this.products);
 }
 
 class GetUserAction {
-  final dynamic _user;
-
-  dynamic get user => this._user;
-
-  GetUserAction(this._user);
+  final User? user;
+  GetUserAction(this.user);
 }
 
 class LogoutUserAction {
-  final dynamic _user;
-
-  dynamic get user => this._user;
-
-  LogoutUserAction(this._user);
+  final User? user;
+  LogoutUserAction(this.user);
 }
 
 class GetProductsAction {
-  final List<Product> _products;
-
-  GetProductsAction(this._products);
-
-  dynamic get products => this._products;
+  final List<Product> products;
+  GetProductsAction(this.products);
 }
 
-class TogleCartProductAction {
-  final List<Product> _cartProducts;
-
-  TogleCartProductAction(this._cartProducts);
-
-  dynamic get cartProducts => this._cartProducts;
+class ToggleCartProductAction {
+  final List<Product> cartProducts;
+  ToggleCartProductAction(this.cartProducts);
 }
 
 class ChangeCartProductAction {
-  final List<Product> _cartProducts;
-
-  ChangeCartProductAction(this._cartProducts);
-
-  dynamic get cartProducts => this._cartProducts;
+  final List<Product> cartProducts;
+  ChangeCartProductAction(this.cartProducts);
 }
 
 class UpdateProductAction {
-  final Product _product;
-
-  UpdateProductAction(this._product);
-
-  dynamic get product => this._product;
+  final Product product;
+  UpdateProductAction(this.product);
 }
+
+class ClearCartAction {}

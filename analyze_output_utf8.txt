@@ -1,0 +1,101 @@
+﻿Analyzing redux...                                              
+
+   info - The prefix 'cartPage' isn't a lower_case_with_underscores identifier - lib\main.dart:16:59 - library_prefixes
+   info - An uninitialized field should have an explicit type annotation - lib\main.dart:26:9 - prefer_typing_uninitialized_variables
+   info - Missing type annotation - lib\main.dart:26:9 - strict_top_level_inference
+   info - Constructors for public widgets should have a named 'key' parameter - lib\main.dart:28:9 - use_key_in_widget_constructors
+  error - The named parameter 'accentColor' isn't defined - lib\main.dart:36:13 - undefined_named_parameter
+  error - The named parameter 'headline1' isn't defined - lib\main.dart:40:17 - undefined_named_parameter
+  error - The named parameter 'headline2' isn't defined - lib\main.dart:42:17 - undefined_named_parameter
+  error - The named parameter 'headline3' isn't defined - lib\main.dart:44:17 - undefined_named_parameter
+  error - The named parameter 'headline6' isn't defined - lib\main.dart:45:17 - undefined_named_parameter
+  error - The named parameter 'bodyText1' isn't defined - lib\main.dart:46:17 - undefined_named_parameter
+  error - The named parameter 'bodyText2' isn't defined - lib\main.dart:47:17 - undefined_named_parameter
+   info - Use interpolation to compose strings and values - lib\models\product.dart:33:16 - prefer_interpolation_to_compose_strings
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\cart\index_page.dart:8:16 - constant_identifier_names
+   info - Constructors for public widgets should have a named 'key' parameter - lib\pages\cart\index_page.dart:12:9 - use_key_in_widget_constructors
+  error - The parameter 'onInit' can't have a value of 'null' because of its type, but the implicit default value is 'null' - lib\pages\cart\index_page.dart:12:25 - missing_default_value_for_parameter
+   info - Invalid use of a private type in a public API - lib\pages\cart\index_page.dart:15:3 - library_private_types_in_public_api
+   info - Missing type annotation - lib\pages\cart\index_page.dart:63:20 - strict_top_level_inference
+   info - Unnecessary instance of 'Container' - lib\pages\cart\index_page.dart:65:12 - avoid_unnecessary_containers
+   info - Constructors for public widgets should have a named 'key' parameter - lib\pages\login_page.dart:10:7 - use_key_in_widget_constructors
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\login_page.dart:11:23 - constant_identifier_names
+   info - Invalid use of a private type in a public API - lib\pages\login_page.dart:14:3 - library_private_types_in_public_api
+  error - The method 'validate' can't be unconditionally invoked because the receiver can be 'null' - lib\pages\login_page.dart:109:45 - unchecked_use_of_nullable_value
+   info - Don't invoke 'print' in production code - lib\pages\login_page.dart:110:21 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\login_page.dart:114:21 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\login_page.dart:145:7 - avoid_print
+   info - The local variable '_snackBar' starts with an underscore - lib\pages\login_page.dart:155:11 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_snackBar' starts with an underscore - lib\pages\login_page.dart:163:11 - no_leading_underscores_for_local_identifiers
+   info - Don't use 'BuildContext's across async gaps - lib\pages\login_page.dart:185:38 - use_build_context_synchronously
+   info - Constructors for public widgets should have a named 'key' parameter - lib\pages\product\detail_page.dart:8:7 - use_key_in_widget_constructors
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\product\detail_page.dart:9:16 - constant_identifier_names
+   info - Invalid use of a private type in a public API - lib\pages\product\detail_page.dart:12:3 - library_private_types_in_public_api
+  error - A value of type 'Object?' can't be assigned to a variable of type 'Product' - lib\pages\product\detail_page.dart:22:28 - invalid_assignment
+  error - The property 'settings' can't be unconditionally accessed because the receiver can be 'null' - lib\pages\product\detail_page.dart:22:51 - unchecked_use_of_nullable_value
+   info - Unnecessary instance of 'Container' - lib\pages\product\detail_page.dart:36:22 - avoid_unnecessary_containers
+  error - The argument type 'int?' can't be assigned to the parameter type 'int'.  - lib\pages\product\detail_page.dart:55:76 - argument_type_not_assignable
+  error - The getter 'bodyText1' isn't defined for the type 'TextTheme' - lib\pages\product\detail_page.dart:74:46 - undefined_getter
+   info - Empty catch block - lib\pages\product\detail_page.dart:89:55 - empty_catches
+  error - The getter 'accentColor' isn't defined for the type 'ThemeData' - lib\pages\product\detail_page.dart:104:67 - undefined_getter
+  error - The getter 'accentColor' isn't defined for the type 'ThemeData' - lib\pages\product\detail_page.dart:122:58 - undefined_getter
+  error - The getter 'headline1' isn't defined for the type 'TextTheme' - lib\pages\product\detail_page.dart:134:58 - undefined_getter
+  error - The getter 'headline3' isn't defined for the type 'TextTheme' - lib\pages\product\detail_page.dart:141:58 - undefined_getter
+   info - The prefix 'cartPage' isn't a lower_case_with_underscores identifier - lib\pages\product\products_page.dart:10:59 - library_prefixes
+   info - The constant name 'Favorite' isn't a lowerCamelCase identifier - lib\pages\product\products_page.dart:12:22 - constant_identifier_names
+   info - The constant name 'All' isn't a lowerCamelCase identifier - lib\pages\product\products_page.dart:12:32 - constant_identifier_names
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\product\products_page.dart:15:23 - constant_identifier_names
+   info - Constructors for public widgets should have a named 'key' parameter - lib\pages\product\products_page.dart:19:9 - use_key_in_widget_constructors
+  error - The parameter 'onInit' can't have a value of 'null' because of its type, but the implicit default value is 'null' - lib\pages\product\products_page.dart:19:28 - missing_default_value_for_parameter
+   info - Invalid use of a private type in a public API - lib\pages\product\products_page.dart:22:3 - library_private_types_in_public_api
+  error - The property 'email' can't be unconditionally accessed because the receiver can be 'null' - lib\pages\product\products_page.dart:68:74 - unchecked_use_of_nullable_value
+   info - The 'child' argument should be last in widget constructor invocations - lib\pages\product\products_page.dart:78:25 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations - lib\pages\product\products_page.dart:82:25 - sort_child_properties_last
+   info - Unnecessary instance of 'Container' - lib\pages\product\products_page.dart:104:15 - avoid_unnecessary_containers
+   info - The 'children' argument should be last in widget constructor invocations - lib\pages\product\products_page.dart:129:29 - sort_child_properties_last
+  error - The getter 'accentColor' isn't defined for the type 'ThemeData' - lib\pages\product\products_page.dart:134:58 - undefined_getter
+  error - The getter 'accentColor' isn't defined for the type 'ThemeData' - lib\pages\product\products_page.dart:140:58 - undefined_getter
+   info - Constructors for public widgets should have a named 'key' parameter - lib\pages\register_page.dart:10:7 - use_key_in_widget_constructors
+   info - The constant name 'ROUTE' isn't a lowerCamelCase identifier - lib\pages\register_page.dart:11:23 - constant_identifier_names
+   info - Invalid use of a private type in a public API - lib\pages\register_page.dart:14:3 - library_private_types_in_public_api
+  error - The method 'validate' can't be unconditionally invoked because the receiver can be 'null' - lib\pages\register_page.dart:129:45 - unchecked_use_of_nullable_value
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:130:21 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:133:21 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:177:7 - avoid_print
+   info - The local variable '_snackBar' starts with an underscore - lib\pages\register_page.dart:187:11 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_snackBar' starts with an underscore - lib\pages\register_page.dart:195:11 - no_leading_underscores_for_local_identifiers
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:212:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:213:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:214:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\pages\register_page.dart:215:5 - avoid_print
+   info - Don't use 'BuildContext's across async gaps - lib\pages\register_page.dart:220:38 - use_build_context_synchronously
+  error - A value of type 'Map<String, dynamic>?' can't be assigned to a variable of type 'Map<String, dynamic>' - lib\redux\actions.dart:18:40 - invalid_assignment
+warning - The operand can't be 'null', so the condition is always 'false' - lib\redux\actions.dart:29:24 - unnecessary_null_comparison
+warning - Dead code - lib\redux\actions.dart:29:34 - dead_code
+   info - Function literals shouldn't be passed to 'forEach' - lib\redux\actions.dart:52:11 - avoid_function_literals_in_foreach_calls
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:93:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:102:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:127:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:136:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:158:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:167:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\redux\actions.dart:182:3 - avoid_print
+   info - Function literals shouldn't be passed to 'forEach' - lib\redux\actions.dart:199:18 - avoid_function_literals_in_foreach_calls
+   info - Empty catch block - lib\redux\actions.dart:227:17 - empty_catches
+   info - Function literals shouldn't be passed to 'forEach' - lib\redux\actions.dart:239:18 - avoid_function_literals_in_foreach_calls
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:258:27 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:266:31 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:274:27 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:280:21 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:288:21 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:298:27 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:306:31 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:314:31 - unnecessary_this
+   info - Unnecessary 'this.' qualifier - lib\redux\actions.dart:322:26 - unnecessary_this
+   info - Statements in an if should be enclosed in a block - lib\redux\reducers.dart:22:5 - curly_braces_in_flow_control_structures
+  error - A value of type 'List<dynamic>' can't be returned from the function 'productsReducer' because it has a return type of 'List<Product>' - lib\redux\reducers.dart:24:12 - return_of_invalid_type
+   info - Constructors for public widgets should have a named 'key' parameter - lib\widgets\cart_item.dart:10:3 - use_key_in_widget_constructors
+   info - Constructors in '@immutable' classes should be declared as 'const' - lib\widgets\cart_item.dart:10:3 - prefer_const_constructors_in_immutables
+   info - Invalid use of a private type in a public API - lib\widgets\cart_item.dart:13:3 - library_private_types_in_public_api
+   info - Use a 'SizedBox' to add whitespace to a layout - lib\widgets\cart_item.dart:59:23 - sized_box_for_whitespace
+

@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:market/models/app_state.dart';
-import 'package:market/models/product.dart';
-import 'package:market/widgets/cart_item.dart';
+import 'package:tienda_app/models/app_state.dart';
+import 'package:tienda_app/models/product.dart';
+import 'package:tienda_app/widgets/cart_item.dart';
 
 class IndexPage extends StatefulWidget {
-  static const ROUTE = "/cart";
+  const IndexPage({super.key, required this.onInit});
 
-  final Function() onInit;
-
-  const IndexPage({this.onInit});
+  static const String ROUTE = "/cart";
+  final VoidCallback onInit;
 
   @override
-  _IndexPageState createState() => _IndexPageState();
+  State<IndexPage> createState() => _IndexPageState();
 }
 
 class _IndexPageState extends State<IndexPage> {
   @override
   void initState() {
     widget.onInit();
-
     super.initState();
   }
 
@@ -32,17 +30,13 @@ class _IndexPageState extends State<IndexPage> {
         converter: (store) => store.state,
         builder: (_, state) => Scaffold(
           appBar: AppBar(
-            title: Text("Listado carrito"),
-            bottom: TabBar(
+            title: const Text("Tu Carrito"),
+            bottom: const TabBar(
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
               tabs: [
-                Tab(
-                  icon: Icon(Icons.shopping_cart),
-                ),
-                Tab(
-                  icon: Icon(Icons.credit_card),
-                )
+                Tab(icon: Icon(Icons.shopping_cart)),
+                Tab(icon: Icon(Icons.credit_card)),
               ],
             ),
           ),
@@ -53,17 +47,21 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   Widget _cartTab(AppState state) {
-    List<Product> productsCart = state.productsCart;
+    final List<Product> productsCart = state.productsCart;
+
+    if (productsCart.isEmpty) {
+      return const Center(child: Text("Tu carrito está vacío"));
+    }
 
     return ListView.builder(
-        itemCount: productsCart.length,
-        itemBuilder: (_, index) => CartItem(product: productsCart[index]));
+      itemCount: productsCart.length,
+      itemBuilder: (_, index) => CartItem(product: productsCart[index]),
+    );
   }
 
-  Widget _orderTab(state) {
-    // AppState state
-    return Container(
-      child: Text("Ordenes"),
+  Widget _orderTab(AppState state) {
+    return const Center(
+      child: Text("Sección de Órdenes (Próximamente)"),
     );
   }
 }
